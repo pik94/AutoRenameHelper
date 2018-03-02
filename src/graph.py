@@ -53,7 +53,7 @@ class Node:
             self.parent = None
         elif not isinstance(parent, Node):
             raise ParentSettingError("Cannot set a parent for the node. The given parent must have "
-                                   "type 'Node'but the given has type {}".format(type(parent)))
+                                     "type 'Node'but the given has type {}".format(type(parent)))
         else:
             self.parent = parent
 
@@ -63,7 +63,7 @@ class Node:
     def set_children(self, children):
         if not isinstance(children, list) and not isinstance(children, tuple):
             raise ChildrenSettingError("Cannot set children for the node. The given list of children must have "
-                                   "type 'list' or 'tuple'. The given has type {}".format(type(children)))
+                                       "type 'list' or 'tuple'. The given has type {}".format(type(children)))
         else:
             self.children.extend(children)
 
