@@ -89,7 +89,7 @@ class Node:
         return self.root_attr
 
     def set_leaf_attr(self, leaf_attr):
-        return self.leaf_attr
+        self.leaf_attr = leaf_attr
 
     def if_leaf(self):
         return self.leaf_attr
