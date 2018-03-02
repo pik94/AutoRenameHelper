@@ -8,16 +8,16 @@ class Processor:
     """
     This class is a main class which produces processing of files.
     """
-    def __init__(self, run_path, path, translator=None, path_to_translator=None, layer=1, exclude_dirs=False, exclude_files=False):
+    def __init__(self, path, translator=None, path_to_translator=None, layer=1, exclude_dirs=False, exclude_files=False):
         """
-        :param run_path: a path where the script is run
-        :param path: a path for rename
-        :param layer: a layer in hierarchy of directories
+        :param path: a path to directory to rename
+        :param translator: an user's translator given as dictionary. None by default
+        :param path_to_translator: a path to file where there is an user's translator. None by default
+        :param layer: a layer in hierarchy of directories to rename files and directories. 1 by default
         :param exclude_dirs: if this flag is True, directories won't be renamed
         :param exclude_files: if this flag is True, files won't be renamed
         """
         self.root_path = path
-        self.run_path = run_path
         if layer < 0:
             raise BaseError("Layer cannot be less 0.")
         else:
@@ -31,7 +31,6 @@ class Processor:
             else:
                 raise BaseError("The given translator doesn't have a type 'dict'")
         else:
-            self.translator = {}
             try:
                 self._create_translator(path_to_translator)
             except ExistingFormatValue:
@@ -44,10 +43,10 @@ class Processor:
         This method creates a dictionary for translating.
         NOTE: if we want to except some symbols for your dictionary, we'll be able to set a symbol "#" for it.
         For example: a,#. In this case we except a symbol "a" from your future dictionary.
-        :return:
+        :return: nothing
         """
         if path_to_translator is None:
-            path_to_translator = os.path.join(self.run_path, "config", "translit.txt")
+            path_to_translator = os.path.join(os.getcwd(), "config", "translit.txt")
 
         with open(path_to_translator, "r") as file:
             for line in file:
@@ -59,6 +58,7 @@ class Processor:
                     if key in self.translator:
                         raise ExistingFormatValue(key, value, self.translator[key])
                     self.translator[key] = value
+        return
 
     def run(self):
         for current_path, dirs, files in os.walk(self.root_path, topdown=False):
@@ -84,7 +84,6 @@ class Processor:
 
     def _process(self, path, array):
         for name in array:
-            # print(name)
             low__name = str(name).lower()
             trans__name = self._transliterate(low__name)
             pattern = "[^a-zA-Z0-9_." + reduce(lambda x, y: str(x) + str(y), self.translator.values()) + "]"
