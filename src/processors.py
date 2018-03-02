@@ -1,14 +1,17 @@
 import os
 import re
-from src.errors import *
 from functools import reduce
+
+from src.errors import *
 
 
 class Processor:
     """
     This class is a main class which produces processing of files.
     """
-    def __init__(self, path, translator=None, path_to_translator=None, layer=1, exclude_dirs=False, exclude_files=False):
+
+    def __init__(self, path, translator=None, path_to_translator=None, layer=1, exclude_dirs=False,
+                 exclude_files=False):
         """
         :param path: a path to directory to rename
         :param translator: an user's translator given as dictionary. None by default
