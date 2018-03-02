@@ -77,7 +77,7 @@ class Processor:
                     self._process_dirs(current_path, dirs)
 
     def _process_dirs(self, path, dirs):
-        self._process_files(path, dirs)
+        self._process(path, dirs)
 
     def _process_files(self, path, files):
         self._process(path, files)
