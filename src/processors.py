@@ -8,25 +8,45 @@ from src.errors import *
 class Processor:
     """
     This class is a main class which produces processing of files.
+    It's a really flexible tool to use.
     """
 
-    def __init__(self, path, translator=None, path_to_translator=None, layer=1, exclude_dirs=False,
+    def __init__(self, path, translator=None, path_to_translator="", layer=1, exclude_dirs=False,
                  exclude_files=False):
         """
-        :param path: a path to directory to rename
-        :param translator: an user's translator given as dictionary. None by default
-        :param path_to_translator: a path to file where there is an user's translator. None by default
-        :param layer: a layer in hierarchy of directories to rename files and directories. 1 by default
-        :param exclude_dirs: if this flag is True, directories won't be renamed
-        :param exclude_files: if this flag is True, files won't be renamed
+        :param path: a path to directory to rename. It must be string type
+        :param translator: an user's translator given as dictionary. It must be string type. None by default
+        :param path_to_translator: a path to file where there is an user's translator. It must be string type.
+                                   "" by default
+        :param layer: a layer in hierarchy of directories to rename files and directories.
+                      It must be int type. 1 by default
+        :param exclude_dirs: if this flag is True, directories won't be renamed. It must have bool type.
+                             False by default.
+        :param exclude_files: if this flag is True, files won't be renamed. It must have bool type. False by default.
         """
-        self.root_path = path
-        if layer < 0:
+        if not isinstance(path, str):
+            raise BaseError("path must be type {}. Actually it has type {}".format(type(str), type(path)))
+        else:
+            self.root_path = path
+
+        if not isinstance(layer, int):
+            raise BaseError("Layer must be type {}. Actually it has type {}".format(type(int), type(layer)))
+        elif layer < 0:
             raise BaseError("Layer cannot be less 0.")
         else:
             self.layer = layer
-        self.exclude_dirs = exclude_dirs
-        self.exclude_files = exclude_files
+
+        if not isinstance(exclude_dirs, bool):
+            raise BaseError(
+                "Exclude dirs flag must be type {}. Actually it has type {}".format(type(bool), type(exclude_dirs)))
+        else:
+            self.exclude_dirs = exclude_dirs
+
+        if not isinstance(exclude_dirs, bool):
+            raise BaseError(
+                "Exclude files flag must be type {}. Actually it has type {}".format(type(bool), type(exclude_files)))
+        else:
+            self.exclude_files = exclude_files
 
         if translator is not None:
             if isinstance(translator, dict):
@@ -155,7 +175,6 @@ class Processor:
         :param array:
         :return:
         """
-        print("array:", array)
         conc_str = str(array[0])
         for item in array[1:]:
             conc_str = conc_str + "_" + str(item)
