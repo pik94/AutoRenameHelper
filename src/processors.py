@@ -18,8 +18,8 @@ class Processor:
         :param translator: an user's translator given as dictionary. It must be string type. None by default
         :param path_to_translator: a path to file where there is an user's translator. It must be string type.
                                    None by default
-        :param layer: a layer in hierarchy of directories to rename files and directories.
-                      It must be int type. 1 by default
+        :param layer: a layer in hierarchy of directories to rename files and directories. If 0 then processing all
+                      files and directories recursively. It must be int type. 1 by default
         :param exclude_dirs: if this flag is True, directories won't be renamed. It must have bool type.
                              False by default.
         :param exclude_files: if this flag is True, files won't be renamed. It must have bool type. False by default.
@@ -65,7 +65,7 @@ class Processor:
         if not isinstance(layer, int):
             raise BaseError("Layer must be type {}. Actually it has type {}".format(int, type(layer)))
         elif layer < 0:
-            raise BaseError("Layer cannot be less 0.")
+            raise BaseError("Layer cannot be less then 0.")
         else:
             return layer
 
@@ -119,6 +119,7 @@ class Processor:
 
     def run(self):
         for current_path, dirs, files in os.walk(self.root_path, topdown=False):
+            # the condition below is to check if a current layer in hierarchy deeper then given layer (self.layer)
             if self.layer != 0:
                 if self._compute_current_layer(current_path) > self.layer:
                     continue
