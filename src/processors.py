@@ -7,8 +7,15 @@ from src.errors import *
 
 class Processor:
     """
-    This class is a main class which produces processing of files.
-    It's a really flexible tool to use.
+    This class is a main class which produces processing of files and directories.
+    It's a really flexible tool to use. It can rename files and directories using an inner or an user dictionary.
+    The main idea this process is that all directories and files are in hierarchy. It's a good for us.
+    So, you can set root path to process. If it's only file, we'll just rename it. If it's directory, it'll be more
+    interesting case. An hierarchy of dictionaries and files is a graph. This graph will have root and leafs. So, you
+    can compute a distance from a root to an any node of it. All same distances are layer in the hierarchy.
+    If you need to rename files and dictionaries before some layer, will just set it!
+    Also, you can exclude files of dictionaries for renaming.
+    An example of Processor class gets path to directory or file to rename.
     """
 
     def __init__(self, path, translator=None, path_to_translator=None, layer=1, exclude_dirs=False,
@@ -90,8 +97,8 @@ class Processor:
     def _create_translator_for_path(self, path_to_translator=None):
         """
         This method creates a dictionary for translating.
-        NOTE: if we want to except some symbols for your dictionary, we'll be able to set a tag "#exlude" for it.
-        For example: a,#exlude. In this case we except a symbol "a" from your future dictionary.
+        NOTE: if we want to except some symbols for your dictionary, we'll be able to set a tag "#exclude" for it.
+        For example: a,#exclude. In this case we except a symbol "a" from your future dictionary.
         :return: translator
         """
         if path_to_translator is None:
@@ -100,7 +107,7 @@ class Processor:
         translator = {}
         with open(path_to_translator, "r") as file:
             for line in file:
-                if "#exlude" in line:
+                if "#exclude" in line:
                     continue
                 else:
                     splitted_line = line.split(",")
