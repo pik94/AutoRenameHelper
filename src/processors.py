@@ -24,54 +24,77 @@ class Processor:
                              False by default.
         :param exclude_files: if this flag is True, files won't be renamed. It must have bool type. False by default.
         """
-        if not isinstance(path, str):
-            raise BaseError("path must be type {}. Actually it has type {}".format(str, type(path)))
-        else:
-            self.root_path = path
+        try:
+            self.root_path = self._create_root_path(path)
+        except BaseError as e:
+            raise ConstructorError(e.get_message())
 
-        if not isinstance(layer, int):
-            raise BaseError("Layer must be type {}. Actually it has type {}".format(int, type(layer)))
-        elif layer < 0:
-            raise BaseError("Layer cannot be less 0.")
-        else:
-            self.layer = layer
+        try:
+            self.layer = self._create_layer(layer)
+        except BaseError as e:
+            raise ConstructorError(e.get_message())
+
+        try:
+            self.translator = self._create_translator(translator, path_to_translator)
+        except BaseError as e:
+            raise ConstructorError(e.get_message())
 
         if not isinstance(exclude_dirs, bool):
-            raise BaseError(
+            raise ConstructorError(
                 "Exclude dirs flag must be type {}. Actually it has type {}".format(bool, type(exclude_dirs)))
         else:
             self.exclude_dirs = exclude_dirs
 
         if not isinstance(exclude_dirs, bool):
-            raise BaseError(
+            raise ConstructorError(
                 "Exclude files flag must be type {}. Actually it has type {}".format(bool, type(exclude_files)))
         else:
             self.exclude_files = exclude_files
 
-        self.translator = {}
+    def _create_root_path(self, path):
+        if not isinstance(path, str):
+            raise BaseError("path must be type {}. Actually it has type {}".format(str, type(path)))
+        else:
+            if os.path.exists(path):
+                return path
+            else:
+                raise BaseError("Given path {} doesn't exist.".format(path))
+
+    def _create_layer(self, layer):
+        if not isinstance(layer, int):
+            raise BaseError("Layer must be type {}. Actually it has type {}".format(int, type(layer)))
+        elif layer < 0:
+            raise BaseError("Layer cannot be less 0.")
+        else:
+            return layer
+
+    def _create_translator(self, translator, path_to_translator):
         if translator is not None:
             if isinstance(translator, dict):
-                self.translator = translator
+                return translator
             else:
                 raise BaseError("The given translator doesn't have a type 'dict'")
         else:
             try:
-                self._create_translator(path_to_translator)
+                self.translator = self._create_translator_for_path(path_to_translator)
             except ExistingFormatValue:
                 raise BaseError("Can't create an object of class {}".format(Processor.__name__))
             except FileNotFoundError:
-                raise BaseError("No such file or directory: {}".format(path_to_translator))
+                raise BaseError("No such file containing dictionary: {}".format(path_to_translator))
+            except IsADirectoryError:
+                raise BaseError("Given path '{}' isn't a file ".format(path_to_translator))
 
-    def _create_translator(self, path_to_translator=None):
+    def _create_translator_for_path(self, path_to_translator=None):
         """
         This method creates a dictionary for translating.
         NOTE: if we want to except some symbols for your dictionary, we'll be able to set a symbol "#" for it.
         For example: a,#. In this case we except a symbol "a" from your future dictionary.
-        :return: nothing
+        :return: translator
         """
         if path_to_translator is None:
             path_to_translator = os.path.join(os.getcwd(), "config", "translit.txt")
 
+        translator = {}
         with open(path_to_translator, "r") as file:
             for line in file:
                 if "#" in line:
@@ -79,10 +102,10 @@ class Processor:
                 else:
                     splitted_line = line.split(",")
                     key, value = splitted_line[0], splitted_line[1].strip()
-                    if key in self.translator:
-                        raise ExistingFormatValue(key, value, self.translator[key])
-                    self.translator[key] = value
-        return
+                    if key in translator:
+                        raise ExistingFormatValue(key, value, translator[key])
+                    translator[key] = value
+        return translator
 
     def run(self):
         for current_path, dirs, files in os.walk(self.root_path, topdown=False):
