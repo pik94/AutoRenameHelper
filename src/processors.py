@@ -36,6 +36,7 @@ class Processor:
 
         try:
             self.translator = self._create_translator(translator, path_to_translator)
+            self.print_translator()
         except BaseError as e:
             raise ConstructorError(e.get_message())
 
@@ -76,7 +77,7 @@ class Processor:
                 raise BaseError("The given translator doesn't have a type 'dict'")
         else:
             try:
-                self.translator = self._create_translator_for_path(path_to_translator)
+                translator =  self._create_translator_for_path(path_to_translator)
             except ExistingFormatValue:
                 raise BaseError("Can't create an object of class {}".format(Processor.__name__))
             except FileNotFoundError:
@@ -84,11 +85,13 @@ class Processor:
             except IsADirectoryError:
                 raise BaseError("Given path '{}' isn't a file ".format(path_to_translator))
 
+            return translator
+
     def _create_translator_for_path(self, path_to_translator=None):
         """
         This method creates a dictionary for translating.
-        NOTE: if we want to except some symbols for your dictionary, we'll be able to set a symbol "#" for it.
-        For example: a,#. In this case we except a symbol "a" from your future dictionary.
+        NOTE: if we want to except some symbols for your dictionary, we'll be able to set a tag "#exlude" for it.
+        For example: a,#exlude. In this case we except a symbol "a" from your future dictionary.
         :return: translator
         """
         if path_to_translator is None:
@@ -97,7 +100,7 @@ class Processor:
         translator = {}
         with open(path_to_translator, "r") as file:
             for line in file:
-                if "#" in line:
+                if "#exlude" in line:
                     continue
                 else:
                     splitted_line = line.split(",")
@@ -106,6 +109,13 @@ class Processor:
                         raise ExistingFormatValue(key, value, translator[key])
                     translator[key] = value
         return translator
+
+    def print_translator(self):
+        print("Dictionary for transliting is:")
+        if len(self.translator) == 0:
+            print("Void dictionary")
+        for item in sorted(self.translator.items(), key=lambda item: item[0]):
+            print("{} -> {}".format(item[0], item[1]))
 
     def run(self):
         for current_path, dirs, files in os.walk(self.root_path, topdown=False):
@@ -133,7 +143,12 @@ class Processor:
         for name in array:
             low__name = str(name).lower()
             trans__name = self._transliterate(low__name)
-            pattern = "[^a-zA-Z0-9_." + reduce(lambda x, y: str(x) + str(y), self.translator.values()) + "]"
+
+            sub_pattern = ""
+            if len(self.translator.values()) > 0:
+                sub_pattern = reduce(lambda x, y: str(x) + str(y), self.translator.values())
+            pattern = "[^a-zA-Z0-9_." + sub_pattern + "]"
+
             splitted__name = self.split_name(trans__name, pattern)
             new_file_name = self.concatenate_elements(splitted__name)
             if new_file_name != "":
