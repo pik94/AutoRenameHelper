@@ -15,7 +15,6 @@ class Processor:
     can compute a distance from a root to an any node of it. All same distances are layer in the hierarchy.
     If you need to rename files and dictionaries before some layer, will just set it!
     Also, you can exclude files of dictionaries for renaming.
-    An example of Processor class gets path to directory or file to rename.
     """
 
     def __init__(self, path, translator=None, path_to_translator=None, layer=1, exclude_dirs=False,
