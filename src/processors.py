@@ -11,13 +11,13 @@ class Processor:
     It's a really flexible tool to use.
     """
 
-    def __init__(self, path, translator=None, path_to_translator="", layer=1, exclude_dirs=False,
+    def __init__(self, path, translator=None, path_to_translator=None, layer=1, exclude_dirs=False,
                  exclude_files=False):
         """
         :param path: a path to directory to rename. It must be string type
         :param translator: an user's translator given as dictionary. It must be string type. None by default
         :param path_to_translator: a path to file where there is an user's translator. It must be string type.
-                                   "" by default
+                                   None by default
         :param layer: a layer in hierarchy of directories to rename files and directories.
                       It must be int type. 1 by default
         :param exclude_dirs: if this flag is True, directories won't be renamed. It must have bool type.
@@ -48,6 +48,7 @@ class Processor:
         else:
             self.exclude_files = exclude_files
 
+        self.translator = {}
         if translator is not None:
             if isinstance(translator, dict):
                 self.translator = translator
