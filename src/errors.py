@@ -1,11 +1,12 @@
 class BaseError(Exception):
-    def __init__(self, message):
+    def __init__(self, message=""):
         self.message = message
 
     def print_message(self):
         print("{}".format(self.message))
 
-
+    def get_message(self):
+        return self.message
 
 class ExistingFormatValue(BaseError):
     def __init__(self, key, value, old_value):
