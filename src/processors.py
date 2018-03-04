@@ -25,12 +25,12 @@ class Processor:
         :param exclude_files: if this flag is True, files won't be renamed. It must have bool type. False by default.
         """
         if not isinstance(path, str):
-            raise BaseError("path must be type {}. Actually it has type {}".format(type(str), type(path)))
+            raise BaseError("path must be type {}. Actually it has type {}".format(str, type(path)))
         else:
             self.root_path = path
 
         if not isinstance(layer, int):
-            raise BaseError("Layer must be type {}. Actually it has type {}".format(type(int), type(layer)))
+            raise BaseError("Layer must be type {}. Actually it has type {}".format(int, type(layer)))
         elif layer < 0:
             raise BaseError("Layer cannot be less 0.")
         else:
@@ -38,13 +38,13 @@ class Processor:
 
         if not isinstance(exclude_dirs, bool):
             raise BaseError(
-                "Exclude dirs flag must be type {}. Actually it has type {}".format(type(bool), type(exclude_dirs)))
+                "Exclude dirs flag must be type {}. Actually it has type {}".format(bool, type(exclude_dirs)))
         else:
             self.exclude_dirs = exclude_dirs
 
         if not isinstance(exclude_dirs, bool):
             raise BaseError(
-                "Exclude files flag must be type {}. Actually it has type {}".format(type(bool), type(exclude_files)))
+                "Exclude files flag must be type {}. Actually it has type {}".format(bool, type(exclude_files)))
         else:
             self.exclude_files = exclude_files
 
